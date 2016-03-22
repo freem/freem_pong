@@ -274,7 +274,7 @@ game_updateBall:
 	bne @game_updateBall_CheckCollisions
 	.ifdef __DEBUGMODE__
 	lda p1Debug
-	beq @game_updateBall_CheckCollisions
+	bne @game_updateBall_CheckCollisions
 	.endif
 	rts
 
