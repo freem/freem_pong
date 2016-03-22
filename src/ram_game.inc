@@ -58,6 +58,7 @@
 	p1HitboxMaxY: .res 1 ; player 1 hitbox bottom point
 	p2HitboxMaxY: .res 1 ; player 2 hitbox bottom point
 
+	runTimers:    .res 1 ; are timers active?
 	timer1:       .res 1 ; general purpose 8-bit timer
 	timer2:       .res 1 ; general purpose 8-bit timer
 
