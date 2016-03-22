@@ -10,13 +10,11 @@ GAME_MAX_SCORE = 15
 BALL_SPEED_START = $11 ; X speed = 1, Y speed = 1
 BALL_SPEED_MAX   = $99 ; to be determined later
 
-PADDLE_X_DEPTH = 7 ; ball is 7px wide (todo: account for maximum X speed)
-
 SPEED_Y_ADD_PADDLE_TOPMAX = $02
-SPEED_Y_ADD_PADDLE_TOPMID = $02
+SPEED_Y_ADD_PADDLE_TOPMID = $01
 SPEED_Y_ADD_PADDLE_TOPMIN = $01
 SPEED_Y_ADD_PADDLE_BOTMIN = $01
-SPEED_Y_ADD_PADDLE_BOTMID = $02
+SPEED_Y_ADD_PADDLE_BOTMID = $01
 SPEED_Y_ADD_PADDLE_BOTMAX = $02
 
 SPEED_X_ADD_PADDLE = $10
@@ -712,6 +710,7 @@ game_ballToPlayerCollisionCheck:
 	; player 1 X check
 	lda ballX
 	cmp #BALL_PADDLEX_P1
+	; todo: proper check; needs to not include area behind paddle; only 4px or so
 	bcc @game_ballToPlayerCollisionCheck_CheckYMin
 	beq @game_ballToPlayerCollisionCheck_CheckYMin
 	jmp @game_ballToPlayerCollisionCheck_end
@@ -726,6 +725,7 @@ game_ballToPlayerCollisionCheck:
 @game_ballToPlayerCollisionCheck_CheckP2X_Part2:
 	lda ballX
 	cmp #BALL_PADDLEX_P2
+	; todo: proper check; needs to not include area behind paddle; only 4px or so
 	bcs @game_ballToPlayerCollisionCheck_CheckYMin
 	jmp @game_ballToPlayerCollisionCheck_end
 
@@ -843,8 +843,8 @@ game_ballToPlayerCollisionCheck:
 
 	; increment X speed
 	lda ballSpeed
-	clc
-	adc #SPEED_X_ADD_PADDLE
+	and #$F3
+	ora #SPEED_X_ADD_PADDLE
 	sta ballSpeed
 
 	jmp @game_ballToPlayerCollisionCheck_end
