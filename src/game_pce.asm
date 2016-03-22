@@ -9,12 +9,12 @@ BALL_DEFAULT_X = (256/2)+29 ; screen center x + 29
 BALL_DEFAULT_Y = (240/2)+61 ; screen center x + 61
 
 WALL_TOP = 94 ; top wall: ballY = 0x5E (94)
-WALL_BOT = 255 ; bot wall: ballY = undetermined (xxx: no, wrong)
-WALL_BOT_HI = 1 ; bottom wall high byte (xxx)
+WALL_BOT = 12   ; bottom wall low byte  0x0C (12)
+WALL_BOT_HI = 1 ; bottom wall high byte 0x01 (1)
 
 WALL_LEFT  = 0+32   ; left wall
-WALL_RIGHT = 255    ; right wall (xxx: no, wrong)
-WALL_RIGHT_HI = 1   ; right wall high byte (xxx)
+WALL_RIGHT = 25     ; right wall low byte  0x19 (25)
+WALL_RIGHT_HI = 1   ; right wall high byte 0x01 (1)
 
 BALL_PADDLEX_P1 = 62  ; P1 paddle surface X = 0x3E (62)
 BALL_PADDLEX_P2 = 250 ; P2 paddle surface X = 0xFA (250)
@@ -210,6 +210,8 @@ game_InputsGame_Debug_pce:
 
 	; ball up
 	dec ballY
+	lda ballY
+	cmp #$FF
 	bne @game_InputsGame_Debug_pce_right
 
 @game_InputsGame_Debug_pce_Y_Up_Under256:
@@ -227,6 +229,7 @@ game_InputsGame_Debug_pce:
 
 	lda #1
 	sta ballX_Hi
+	stz ballX
 
 @game_InputsGame_Debug_pce_down:
 	; down (bit 6)
@@ -234,12 +237,12 @@ game_InputsGame_Debug_pce:
 
 	; ball down
 	inc ballY
-	lda ballY
 	bne @game_InputsGame_Debug_pce_left
 
 @game_InputsGame_Debug_pce_Y_Down_Past256:
 	lda #1
 	sta ballY_Hi
+	stz ballY
 
 @game_InputsGame_Debug_pce_left:
 	; left (bit 7)

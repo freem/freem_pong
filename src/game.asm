@@ -281,6 +281,10 @@ game_updateBall:
 @game_updateBall_CheckCollisions:
 	;-- check for collisions --;
 	; [wall collisions (ballY)]
+	.ifdef __PCE__
+	lda ballY_Hi
+	bne @game_updateBall_CheckWallBottom
+	.endif
 	lda ballY
 	cmp #WALL_TOP
 	beq @game_updateBall_CollideTopWall
@@ -293,6 +297,10 @@ game_updateBall:
 	sta ballDir
 
 	; keep ball in-bounds if the speed makes the ball go out of bounds
+	.ifdef __PCE__
+	lda ballY_Hi
+	bne @game_updateBall_CheckWallBottom
+	.endif
 	lda ballY
 	cmp #WALL_TOP
 	bcs @game_updateBall_CheckWallBottom
@@ -301,9 +309,17 @@ game_updateBall:
 	; todo: this isn't perfect, but it works for now
 	lda #WALL_TOP
 	sta ballY
+	.ifdef __PCE__
+	stz ballY_Hi
+	.endif
+	jmp @game_updateBall_CheckPaddle
 
 @game_updateBall_CheckWallBottom:
-	; temporary
+	.ifdef __PCE__
+	lda ballY_Hi
+	cmp #WALL_BOT_HI
+	bne @game_updateBall_CheckPaddle
+	.endif
 	lda ballY
 	cmp #WALL_BOT
 	bcc @game_updateBall_CheckPaddle
@@ -315,6 +331,7 @@ game_updateBall:
 	sta ballDir
 
 	; keep ball in-bounds if the speed makes the ball go out of bounds
+	; todo: PCE check
 	lda ballY
 	cmp #WALL_BOT
 	beq @game_updateBall_CheckPaddle
@@ -338,14 +355,13 @@ game_updateBall:
 
 	; [screen boundaries (ballX)]
 @game_updateBall_CheckLeft:
-	; xxx: PCE needs checking of high byte as well
-	lda ballX
-	cmp #WALL_LEFT
-	bne @game_updateBall_CheckRight
 	.ifdef __PCE__
 	lda ballX_Hi
 	bne @game_updateBall_CheckRight
 	.endif
+	lda ballX
+	cmp #WALL_LEFT
+	bne @game_updateBall_CheckRight
 
 	; P2 scored on P1
 	lda #0
@@ -361,6 +377,11 @@ game_updateBall:
 
 @game_updateBall_CheckRight:
 	; xxx: PCE needs checking of high byte as well
+	.ifdef __PCE__
+	lda ballX_Hi
+	beq @game_updateBall_move
+	.endif
+	lda ballX
 	cmp #WALL_RIGHT
 	bne @game_updateBall_move
 
@@ -421,11 +442,9 @@ game_updateBall_render:
 	bra @game_updateBall_CheckY
 
 @game_updateBall_X_Past256:
-	lda ballX_Hi
-	beq @game_updateBall_CheckY
-
 	lda #1
 	sta ballX_Hi
+	stz ballX
 	bra @game_updateBall_CheckY
 
 @game_updateBall_X_Under256:
@@ -439,11 +458,9 @@ game_updateBall_render:
 	bra game_updateBall_render_real
 
 @game_updateBall_Y_Past256:
-	lda ballY_Hi
-	beq @game_updateBall_Y_Under256
-
 	lda #1
 	sta ballY_Hi
+	stz ballY
 	bra game_updateBall_render_real
 
 @game_updateBall_Y_Under256:
