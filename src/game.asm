@@ -12,11 +12,12 @@ BALL_SPEED_MAX   = $99 ; to be determined later
 
 PADDLE_X_DEPTH = 7 ; ball is 7px wide (todo: account for maximum X speed)
 
-SPEED_Y_ADD_PADDLE_TOPMAX = $03
-SPEED_Y_ADD_PADDLE_TOPMID = $01
-SPEED_Y_ADD_PADDLE_MIDDLE = $00
-SPEED_Y_ADD_PADDLE_BOTMID = $01
-SPEED_Y_ADD_PADDLE_BOTMAX = $03
+SPEED_Y_ADD_PADDLE_TOPMAX = $02
+SPEED_Y_ADD_PADDLE_TOPMID = $02
+SPEED_Y_ADD_PADDLE_TOPMIN = $01
+SPEED_Y_ADD_PADDLE_BOTMIN = $01
+SPEED_Y_ADD_PADDLE_BOTMID = $02
+SPEED_Y_ADD_PADDLE_BOTMAX = $02
 
 SPEED_X_ADD_PADDLE = $10
 
@@ -83,6 +84,7 @@ game_setup:
 
 	; zero out timers
 	lda #0
+	sta runTimers
 	sta timer1
 	sta timer2
 
@@ -189,6 +191,24 @@ game_GameLoop:
 	jsr game_InputsGame
 	jsr game_updatePaddles
 	jsr game_updateBall
+
+	lda runTimers
+	beq @game_GameLoop_VBlank
+
+@game_GameLoop_Timers:
+	inc timer1
+	lda timer1
+	cmp #80
+	bne @game_GameLoop_VBlank
+
+	; ok, timer is done
+	lda #0
+	sta timer1
+	sta timer2
+	sta runTimers
+
+	
+	jsr game_newServe
 
 ;------------------------------------------------------------------------------;
 @game_GameLoop_VBlank:
@@ -372,7 +392,15 @@ game_updateBall:
 	inc scoreP2
 	jsr UPDATE_SCORE_DISP
 
-	; todo: hide ball and set timer
+	; todo: hide ball
+
+	; set timers
+	lda #1
+	sta runTimers
+	lda #0
+	sta timer1
+	sta timer2
+
 	jmp game_updateBall_render
 
 @game_updateBall_CheckRight:
@@ -395,7 +423,15 @@ game_updateBall:
 	inc scoreP1
 	jsr UPDATE_SCORE_DISP
 
-	; todo: hide ball and set timer
+	; todo: hide ball
+
+	; set timers
+	lda #1
+	sta runTimers
+	lda #0
+	sta timer1
+	sta timer2
+
 	jmp game_updateBall_render
 
 @game_updateBall_move:
@@ -682,6 +718,12 @@ game_ballToPlayerCollisionCheck:
 
 @game_ballToPlayerCollisionCheck_CheckP2X:
 	; player 2 X check
+	.ifdef __PCE__
+	lda ballX_Hi
+	beq @game_ballToPlayerCollisionCheck_CheckP2X_Part2
+	rts
+	.endif
+@game_ballToPlayerCollisionCheck_CheckP2X_Part2:
 	lda ballX
 	cmp #BALL_PADDLEX_P2
 	bcs @game_ballToPlayerCollisionCheck_CheckYMin
@@ -722,6 +764,13 @@ game_ballToPlayerCollisionCheck:
 	; high angle {(up+left),(up+right)}
 	lda tbl_PaddleDir_SectionTop,x
 	sta ballDir
+
+	; ballSpeed = (X) | SPEED_Y_ADD_PADDLE_TOPMAX
+	lda ballSpeed
+	and #$F0
+	ora #SPEED_Y_ADD_PADDLE_TOPMAX
+	sta ballSpeed
+
 	jmp @game_ballToPlayerCollisionCheck_end
 
 ;------------------------------------------------------------------------------;
@@ -737,6 +786,13 @@ game_ballToPlayerCollisionCheck:
 	; medium angle {(up+left),(up+right)}
 	lda tbl_PaddleDir_SectionTop,x
 	sta ballDir
+
+	; ballSpeed = (X) | SPEED_Y_ADD_PADDLE_TOPMID
+	lda ballSpeed
+	and #$F0
+	ora #SPEED_Y_ADD_PADDLE_TOPMID
+	sta ballSpeed
+
 	jmp @game_ballToPlayerCollisionCheck_end
 
 ;------------------------------------------------------------------------------;
@@ -752,6 +808,13 @@ game_ballToPlayerCollisionCheck:
 	; low angle {(up+left),(up+right)}
 	lda tbl_PaddleDir_SectionTop,x
 	sta ballDir
+
+	; ballSpeed = (X) | SPEED_Y_ADD_PADDLE_TOPMIN
+	lda ballSpeed
+	and #$F0
+	ora #SPEED_Y_ADD_PADDLE_TOPMIN
+	sta ballSpeed
+
 	jmp @game_ballToPlayerCollisionCheck_end
 
 ;------------------------------------------------------------------------------;
@@ -770,14 +833,16 @@ game_ballToPlayerCollisionCheck:
 
 	; check X speed
 	lda ballSpeed
+	and #$F0
 	lsr
 	lsr
 	lsr
 	lsr
-	cmp #$0F
+	cmp #2
 	beq @game_ballToPlayerCollisionCheck_end ; skip addition if max already
 
 	; increment X speed
+	lda ballSpeed
 	clc
 	adc #SPEED_X_ADD_PADDLE
 	sta ballSpeed
@@ -797,6 +862,13 @@ game_ballToPlayerCollisionCheck:
 	; low angle {(down+left),(down+right)}
 	lda tbl_PaddleDir_SectionBot,x
 	sta ballDir
+
+	; ballSpeed = (X) | SPEED_Y_ADD_PADDLE_BOTMIN
+	lda ballSpeed
+	and #$F0
+	ora #SPEED_Y_ADD_PADDLE_BOTMIN
+	sta ballSpeed
+
 	jmp @game_ballToPlayerCollisionCheck_end
 
 ;------------------------------------------------------------------------------;
@@ -812,6 +884,13 @@ game_ballToPlayerCollisionCheck:
 	; medium angle {(down+left),(down+right)}
 	lda tbl_PaddleDir_SectionBot,x
 	sta ballDir
+
+	; ballSpeed = (X) | SPEED_Y_ADD_PADDLE_BOTMID
+	lda ballSpeed
+	and #$F0
+	ora #SPEED_Y_ADD_PADDLE_BOTMID
+	sta ballSpeed
+
 	jmp @game_ballToPlayerCollisionCheck_end
 
 ;------------------------------------------------------------------------------;
@@ -825,6 +904,12 @@ game_ballToPlayerCollisionCheck:
 	; high angle {(down+left),(down+right)}
 	lda tbl_PaddleDir_SectionBot,x
 	sta ballDir
+
+	; ballSpeed = (X) | SPEED_Y_ADD_PADDLE_BOTMAX
+	lda ballSpeed
+	and #$F0
+	ora #SPEED_Y_ADD_PADDLE_BOTMAX
+	sta ballSpeed
 
 ;------------------------------------------------------------------------------;
 @game_ballToPlayerCollisionCheck_end:
@@ -878,25 +963,25 @@ game_newServe:
 
 	; after a score, service goes to the player scored upon.
 	lda curServe
-	bne @game_newServe_P2
+	beq @game_newServe_P1
 
 	; pick a random direction based on curServe
-@game_newServe_P1:
-	; serve to player 1
+@game_newServe_P2:
+	; serve to player 2
 	jsr randNum
 	and #3
-	bne @game_newServe_SetP1
+	bne @game_newServe_SetP2
 
-@game_newServe_FixP1:
+@game_newServe_FixP2:
 	; in case our random number gives us a 0 after we've ANDed it...
 	adc #1
 
-@game_newServe_SetP1:
+@game_newServe_SetP2:
 	sta ballDir
 	jmp @game_newServe_SetSpeed
 
-@game_newServe_P2:
-	; serve to player 2
+@game_newServe_P1:
+	; serve to player 1
 	jsr randNum
 	and #3
 	clc
