@@ -16,6 +16,9 @@ WALL_RIGHT = 250 ; right wall (P2)
 BALL_PADDLEX_P1 = 30  ; P1 paddle surface X = 0x1E (30)
 BALL_PADDLEX_P2 = 219 ; P2 paddle surface X = 0xDB (219)
 
+PADDLE_WIDTH_P1 = 17
+PADDLE_WIDTH_P2 = 12
+
 ;------------------------------------------------------------------------------;
 ; Platform-specific routine aliases
 	HANDLE_GAME_INPUT = game_InputsGame_nes

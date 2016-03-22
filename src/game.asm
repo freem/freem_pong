@@ -710,9 +710,15 @@ game_ballToPlayerCollisionCheck:
 	; player 1 X check
 	lda ballX
 	cmp #BALL_PADDLEX_P1
-	; todo: proper check; needs to not include area behind paddle; only 4px or so
-	bcc @game_ballToPlayerCollisionCheck_CheckYMin
-	beq @game_ballToPlayerCollisionCheck_CheckYMin
+	bcc @game_ballToPlayerCollisionCheck_CheckP1X_Part2
+	beq @game_ballToPlayerCollisionCheck_CheckP1X_Part2
+	jmp @game_ballToPlayerCollisionCheck_end
+
+@game_ballToPlayerCollisionCheck_CheckP1X_Part2:
+	; perform behind P1 check
+	lda ballX
+	cmp #BALL_PADDLEX_P1-PADDLE_WIDTH_P1
+	bcs @game_ballToPlayerCollisionCheck_CheckYMin
 	jmp @game_ballToPlayerCollisionCheck_end
 
 @game_ballToPlayerCollisionCheck_CheckP2X:
@@ -725,8 +731,15 @@ game_ballToPlayerCollisionCheck:
 @game_ballToPlayerCollisionCheck_CheckP2X_Part2:
 	lda ballX
 	cmp #BALL_PADDLEX_P2
-	; todo: proper check; needs to not include area behind paddle; only 4px or so
-	bcs @game_ballToPlayerCollisionCheck_CheckYMin
+	bcs @game_ballToPlayerCollisionCheck_CheckP2X_Part3
+	jmp @game_ballToPlayerCollisionCheck_end
+
+@game_ballToPlayerCollisionCheck_CheckP2X_Part3:
+	; perform behind P2 check
+	lda ballX
+	cmp #BALL_PADDLEX_P2+PADDLE_WIDTH_P2
+	bcc @game_ballToPlayerCollisionCheck_CheckYMin
+	beq @game_ballToPlayerCollisionCheck_CheckYMin
 	jmp @game_ballToPlayerCollisionCheck_end
 
 ;------------------------------------------------------------------------------;
