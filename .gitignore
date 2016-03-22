@@ -1,0 +1,3 @@
+bin/*.nes
+bin/*.pce
+src/*.o
