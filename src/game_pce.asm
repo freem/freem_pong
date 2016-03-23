@@ -19,8 +19,8 @@ WALL_RIGHT_HI = 1   ; right wall high byte 0x01 (1)
 BALL_PADDLEX_P1 = 62  ; P1 paddle surface X = 0x3E (62)
 BALL_PADDLEX_P2 = 250 ; P2 paddle surface X = 0xFA (250)
 
-PADDLE_WIDTH_P1 = 0
-PADDLE_WIDTH_P2 = 0
+PADDLE_WIDTH_P1 = 17
+PADDLE_WIDTH_P2 = 6 ; xxxxx
 
 ;------------------------------------------------------------------------------;
 ; Platform-specific routine aliases

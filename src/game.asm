@@ -90,9 +90,8 @@ game_setup:
 	;--------------------------------------------------------------------------;
 	lda #1
 	sta inGame
-	; set curServe based off of a random value (0/1)
-	jsr randNum ; poke the random number generator
-	and #1 ; the extra free throw after a foul in basketball.
+	; mainly for trying to debug PCE version
+	lda #0
 	sta curServe
 	jsr game_newServe ; and serve the ball
 	;--------------------------------------------------------------------------;
@@ -708,6 +707,13 @@ game_ballToPlayerCollisionCheck:
 	beq @game_ballToPlayerCollisionCheck_CheckP2X
 
 	; player 1 X check
+	.ifdef __PCE__
+	lda ballX_Hi
+	beq @game_ballToPlayerCollisionCheck_CheckP1X_Part1
+	rts
+	.endif
+
+@game_ballToPlayerCollisionCheck_CheckP1X_Part1:
 	lda ballX
 	cmp #BALL_PADDLEX_P1
 	bcc @game_ballToPlayerCollisionCheck_CheckP1X_Part2
@@ -737,7 +743,13 @@ game_ballToPlayerCollisionCheck:
 @game_ballToPlayerCollisionCheck_CheckP2X_Part3:
 	; perform behind P2 check
 	lda ballX
+	.ifdef __NES__
 	cmp #BALL_PADDLEX_P2+PADDLE_WIDTH_P2
+	.else
+		.ifdef __PCE__
+			cmp #PADDLE_WIDTH_P2
+		.endif
+	.endif
 	bcc @game_ballToPlayerCollisionCheck_CheckYMin
 	beq @game_ballToPlayerCollisionCheck_CheckYMin
 	jmp @game_ballToPlayerCollisionCheck_end
