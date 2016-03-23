@@ -334,8 +334,7 @@ game_updateBall:
 @game_updateBall_CheckWallBottom:
 	.ifdef __PCE__
 	lda ballY_Hi
-	cmp #WALL_BOT_HI
-	bne @game_updateBall_CheckPaddle
+	beq @game_updateBall_CheckPaddle
 	.endif
 	lda ballY
 	cmp #WALL_BOT
@@ -355,11 +354,11 @@ game_updateBall:
 	bcs @game_updateBall_FixPosition_Bot
 
 @game_updateBall_FixPosition_Bot:
-	; todo: this isn't perfect, but it works for now
+	; todo: this isn't perfect
 	lda #WALL_BOT
 	sta ballY
 	.ifdef __PCE__
-	lda #1
+	lda #WALL_BOT_HI
 	sta ballY_Hi
 	.endif
 
@@ -389,8 +388,6 @@ game_updateBall:
 	inc scoreP2
 	jsr UPDATE_SCORE_DISP
 
-	; todo: hide ball
-
 	; set timers
 	lda #1
 	sta runTimers
@@ -401,10 +398,10 @@ game_updateBall:
 	jmp game_updateBall_render
 
 @game_updateBall_CheckRight:
-	; xxx: PCE needs checking of high byte as well
 	.ifdef __PCE__
 	lda ballX_Hi
-	beq @game_updateBall_move
+	cmp #WALL_RIGHT_HI
+	bne @game_updateBall_move
 	.endif
 	lda ballX
 	cmp #WALL_RIGHT
@@ -419,8 +416,6 @@ game_updateBall:
 	; add point and update score display
 	inc scoreP1
 	jsr UPDATE_SCORE_DISP
-
-	; todo: hide ball
 
 	; set timers
 	lda #1
@@ -493,7 +488,6 @@ game_updateBall_render:
 @game_updateBall_Y_Past256:
 	lda #1
 	sta ballY_Hi
-	stz ballY
 	bra game_updateBall_render_real
 
 @game_updateBall_Y_Under256:
@@ -742,6 +736,13 @@ game_ballToPlayerCollisionCheck:
 
 @game_ballToPlayerCollisionCheck_CheckP2X_Part3:
 	; perform behind P2 check
+	.ifdef __PCE__
+	lda ballX_Hi
+	bne @game_ballToPlayerCollisionCheck_CheckP2X_Part4
+	rts
+	.endif
+
+@game_ballToPlayerCollisionCheck_CheckP2X_Part4:
 	lda ballX
 	.ifdef __NES__
 	cmp #BALL_PADDLEX_P2+PADDLE_WIDTH_P2
@@ -856,22 +857,6 @@ game_ballToPlayerCollisionCheck:
 	lda tbl_PaddleDir_SectionMid,x
 	sta ballDir
 
-	; check X speed
-	lda ballSpeed
-	and #$F0
-	lsr
-	lsr
-	lsr
-	lsr
-	cmp #2
-	beq @game_ballToPlayerCollisionCheck_end ; skip addition if max already
-
-	; increment X speed
-	lda ballSpeed
-	and #$F3
-	ora #SPEED_X_ADD_PADDLE
-	sta ballSpeed
-
 	jmp @game_ballToPlayerCollisionCheck_end
 
 ;------------------------------------------------------------------------------;
@@ -980,8 +965,9 @@ game_newServe:
 	ldy #BALL_DEFAULT_Y
 	stx ballX
 	sty ballY
-	lda #0
+
 	.ifdef __PCE__
+	lda #0
 	sta ballX_Hi
 	sta ballY_Hi
 	.endif
