@@ -3,7 +3,7 @@
 ; nes_ReadPads_unsafe
 ; Reads P1 and P2 controllers (not DMC fortified; used by nes_ReadPads)
 
-nes_ReadPads_unsafe:
+.proc nes_ReadPads_unsafe
 	; strobe joypad
 	lda #1
 	sta JOYSTICK1
@@ -25,12 +25,13 @@ nes_ReadPads_unsafe:
 	dex
 	bne @nes_ReadPads_unsafe_loop
 	rts
+.endproc
 
 ;==============================================================================;
 ; nes_ReadPads
 ; DMC-fortified P1 and P2 controller reading routine.
 
-nes_ReadPads:
+.proc nes_ReadPads
 	; store previous keypress state
 	lda nes_padState   ; player 1 from memory
 	sta tmp04
@@ -62,3 +63,4 @@ nes_ReadPads:
 	bpl @nes_ReadPads_FixKeys
 
 	rts
+.endproc

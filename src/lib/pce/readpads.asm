@@ -14,7 +14,7 @@
 ; pce_ReadPads
 ; PC-Engine 2 button pad reading routine.
 
-pce_ReadPads:
+.proc pce_ReadPads
 	; strobe joypad
 	lda #1
 	sta JOYPAD
@@ -64,3 +64,4 @@ pce_ReadPads:
 	bcc @pce_ReadPads_loop
 
 	rts
+.endproc

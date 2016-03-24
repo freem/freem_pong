@@ -10,12 +10,13 @@ tbl_DefaultAPUValues:
 ; apu_Init
 ; Put the APU channels into a known state.
 
-apu_Init:
+.proc apu_Init
 	ldx #0
 
 @apu_Init_WriteLoop:
 	lda tbl_DefaultAPUValues,x
-	sta APU_PULSE1_MAIN,x
+	sta nes_pulse1_data,x ; write to local APU register copy
+	sta APU_PULSE1_MAIN,x ; write to APU hardware
 	inx
 	cpx #16
 	bne @apu_Init_WriteLoop
@@ -25,5 +26,6 @@ apu_Init:
 	sta APU_STATUS
 
 	rts
+.endproc
 
 ;==============================================================================;

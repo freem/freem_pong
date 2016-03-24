@@ -8,7 +8,7 @@
 ; tmp00,tmp01 - pointer to tile data
 ; tmp02       - number of tiles to load
 
-nes_LoadTiles:
+.proc nes_LoadTiles
 	ldy #0
 @nes_LoadTiles_loop:
 	; load one full tile at a time (16 bytes)
@@ -33,3 +33,4 @@ nes_LoadTiles:
 	bne @nes_LoadTiles_loop
 
 	rts
+.endproc

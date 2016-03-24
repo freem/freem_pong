@@ -9,7 +9,7 @@
 ; 0=$2000, 1=$2400, 2=$2800, 3=$2C00
 ppu_ntIndex: .byte $20,$24,$28,$2C
 
-ppu_clearNT:
+.proc ppu_clearNT
 	tay
 	lda ppu_ntIndex,y
 	sta PPU_ADDR
@@ -35,6 +35,7 @@ ppu_clearNT:
 	bne @writeAttrib
 
 	rts
+.endproc
 
 ;------------------------------------------------------------------------------;
 ; ppu_ClearNT_All
@@ -58,7 +59,7 @@ ppu_ClearNT_All:
 ; ppu_TransferVRAMBuf
 ; Transfers the contents of nes_vramBuf to the PPU.
 
-ppu_TransferVRAMBuf:
+.proc ppu_TransferVRAMBuf
 	ldy #0
 
 @ppu_TransferVRAMBuf_loop:
@@ -115,16 +116,18 @@ ppu_TransferVRAMBuf:
 	sta int_ppuCtrl
 
 	rts
+.endproc
 
 ;==============================================================================;
 ; ppu_ClearVRAMBuf
 ; Clears the contents of nes_vramBuf for the next frame.
 
-ppu_ClearVRAMBuf:
+.proc ppu_ClearVRAMBuf
 	lda #0
-	ldx #127
+	ldx #127 ; buffer length is hardcoded, oops
 @loop:
 	sta nes_vramBuf,x
 	dex
 	bpl @loop
 	rts
+.endproc

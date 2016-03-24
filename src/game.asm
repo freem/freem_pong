@@ -43,6 +43,7 @@ ptbl_BallDirUpdate:
 ;==============================================================================;
 game_setup:
 	jsr DRAW_FIELD ; draw field
+	jsr sound_StopAll ; stop sound
 
 	jsr randNum ; poke the random number generator
 

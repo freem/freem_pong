@@ -90,8 +90,8 @@
 	; local copies of $4000-$4013
 	nes_pulse1_data:   .res 4
 	nes_pulse2_data:   .res 4
-	nes_triangle_data: .res 3 ; note: needs to write 0, skip 1, write 2 and 3
-	nes_noise_data:    .res 3 ; note: needs to write 0, skip 1, write 2 and 3
+	nes_triangle_data: .res 4 ; note: second value is unused
+	nes_noise_data:    .res 4 ; note: second value is unused
 	nes_dpcm_data:     .res 4
 
 	.endif

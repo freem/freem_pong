@@ -8,7 +8,7 @@
 ; tmp02,tmp03 - vram destination
 ; tmp04 - number of tiles to copy
 
-pce_LoadTilesBG:
+.proc pce_LoadTilesBG
 	; set VRAM address for write
 	st0 #VDCREG_MAWR
 	lda tmp02
@@ -45,6 +45,7 @@ pce_LoadTilesBG:
 	sty pce_quickTIA+6
 	; ugly hack to jump to real zero page location
 	jmp pce_quickTIA+__PCE_ZP_START__
+.endproc
 
 ;==============================================================================;
 ; pce_LoadTilesSPR
@@ -55,7 +56,7 @@ pce_LoadTilesBG:
 ; tmp02,tmp03 - vram destination
 ; tmp04 - number of tiles to copy
 
-pce_LoadTilesSPR:
+.proc pce_LoadTilesSPR
 	; set VRAM address for write
 	st0 #VDCREG_MAWR
 	lda tmp02
@@ -92,4 +93,4 @@ pce_LoadTilesSPR:
 	sty pce_quickTIA+6
 	; ugly hack to jump to real zero page location
 	jmp pce_quickTIA+__PCE_ZP_START__
-
+.endproc
