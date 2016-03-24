@@ -74,7 +74,8 @@
 	scoreP2:    .res 1 ; player 2 score
 	curServe:   .res 1 ; who has current serve? (0=p1, 1=p2)
 
-	; todo: sound-related variables
+	; sound related variables
+	soundEnable: .res 1 ; is sound playback allowed?
 
 ;------------------------------------------------------------------------------;
 ; Debug functionality behind an assemble-time flag
