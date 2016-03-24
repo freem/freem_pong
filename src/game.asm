@@ -721,13 +721,15 @@ game_ballToPlayerCollisionCheck:
 	bcs @game_ballToPlayerCollisionCheck_CheckYMin
 	jmp @game_ballToPlayerCollisionCheck_end
 
+;------------------------------------------------------------------------------;
 @game_ballToPlayerCollisionCheck_CheckP2X:
 	; player 2 X check
 	.ifdef __PCE__
 	lda ballX_Hi
-	beq @game_ballToPlayerCollisionCheck_CheckP2X_Part2
-	rts
+	bne @game_ballToPlayerCollisionCheck_CheckP2X_Part3 ; high X > 0: check for behind p2 paddle
 	.endif
+
+	; high X = 0: check for surface
 @game_ballToPlayerCollisionCheck_CheckP2X_Part2:
 	lda ballX
 	cmp #BALL_PADDLEX_P2
