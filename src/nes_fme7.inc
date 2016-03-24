@@ -56,6 +56,14 @@ FME7_PRG0_ROM = %00000000 ; RAM disable + ROM select
 FME7_PRG0_RAM = %11000000 ; RAM enable + RAM select
 
 ;------------------------------------------------------------------------------;
+; FME7 Nametable mirroring constants
+
+FME7_NTM_VERT = %00 ; Vertical Mirroring (Horizontal Scrolling)
+FME7_NTM_HORI = %01 ; Horizontal Mirroring (Vertical Scrolling)
+FME7_NTM_1SCA = %10 ; One-Screen A
+FME7_NTM_1SCB = %11 ; One-Screen B
+
+;------------------------------------------------------------------------------;
 ; IRQ Control
 
 ; 76543210
@@ -72,7 +80,7 @@ FME7_IRQ_COUNT_OFF = %00000000 ; Counter Decrement disabled
 ;==============================================================================;
 
 ; fme7_DoCommand
-; Performs a FME-7 command.
+; Performs a FME-7 command. (Clobbers A.)
 
 ; (Params)
 ; cmd  - command number

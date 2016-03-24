@@ -7,13 +7,14 @@
 ;==============================================================================;
 	;-- continue NES initialization --;
 	lda #$40
-	sta APU_FRAMECOUNT
-	ldx #0
-	stx PPU_CTRL
-	stx PPU_MASK
-	stx APU_DMC_FREQ
+	sta APU_FRAMECOUNT ; disable APU frame counter
 
-	bit PPU_STATUS
+	ldx #0
+	stx PPU_CTRL ; disable NMIs
+	stx PPU_MASK ; disable rendering
+	stx APU_DMC_FREQ ; disable DMC IRQ
+
+	bit PPU_STATUS ; kick the PPU
 
 	; first vblank wait
 @waitVBlank1:
@@ -41,6 +42,8 @@
 	inx
 	bne @clearOAM
 
+	jsr apu_Init ; initialize APU
+
 	;-- FME-7 initialization --;
 	; initialize CHR banks
 	; coincidentally, the command numbers match the values we want to write.
@@ -58,7 +61,7 @@
 	fme7_DoCommand FME7_CMD_PRG2,1 ; $A000-$BFFF
 	fme7_DoCommand FME7_CMD_PRG3,2 ; $C000-$DFFF
 	; mirroring
-	fme7_DoCommand FME7_CMD_NTM,0
+	fme7_DoCommand FME7_CMD_NTM,FME7_NTM_VERT
 	; IRQ
 	fme7_DoCommand FME7_CMD_IRQC,(FME7_IRQ_DISABLE|FME7_IRQ_COUNT_OFF)
 	fme7_DoCommand FME7_CMD_IRQLO,$FF
