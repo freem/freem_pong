@@ -69,9 +69,9 @@
 	.bss
 
 	inGame:     .res 1 ; currently in game? (0=no, 1=yes)
-	maxScore:   .res 1 ; score to win
-	scoreP1:    .res 1 ; player 1 score
-	scoreP2:    .res 1 ; player 2 score
+	maxScore:   .res 1 ; score to win (BCD)
+	scoreP1:    .res 1 ; player 1 score (BCD)
+	scoreP2:    .res 1 ; player 2 score (BCD)
 	curServe:   .res 1 ; who has current serve? (0=p1, 1=p2)
 
 	; sound related variables
