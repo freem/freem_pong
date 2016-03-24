@@ -75,6 +75,7 @@
 ; regular ram
 	.bss
 
+	; todo: figure out how much space each sound chip requires
 ;------------------------------------------------------------------------------;
 ; NES-specific variables
 	.ifdef __NES__
@@ -85,10 +86,40 @@
 
 	; if length == 0, end of buffer reached
 
+	;-- sound vars --;
+	; local copies of $4000-$4013
+	nes_pulse1_data:   .res 4
+	nes_pulse2_data:   .res 4
+	nes_triangle_data: .res 3 ; note: needs to write 0, skip 1, write 2 and 3
+	nes_noise_data:    .res 3 ; note: needs to write 0, skip 1, write 2 and 3
+	nes_dpcm_data:     .res 4
+
 	.endif
 
 ;------------------------------------------------------------------------------;
 ; PCE-specific variables
 	.ifdef __PCE__
 	pce_satbBuf: .res 512 ; satb buffer
+
+	;-- sound vars --;
+	pce_globalVolume: .res 1 ; global volume  ($0801 copy)
+	pce_lfoFrequency: .res 1 ; LFO frequency  ($0808 copy)
+	pce_lfoControl:   .res 1 ; LFO control    ($0809 copy)
+
+	;[ per-channel variables (6x) ]
+	pce_soundFreqLo:  .res 6 ; frequency low  8b ($0802 copies)
+	pce_soundFreqHi:  .res 6 ; frequency high 4b ($0803 copies)
+	pce_soundControl: .res 6 ; control           ($0804 copies)
+	pce_soundBalance: .res 6 ; sound balance/pan ($0805 copies)
+
+	;[ noise is only on channels 5/6 (4/5 when indexed from 0) ]
+	pce_noiseControl: .res 2 ; noise control/frequency ($0807 copies)
+
+	; waveform data buffer for sending to channel via $0806
+	pce_waveformBuf: .res 32 ; data is 5 bits
+
+	; Beyond the scope of this project, but should be noted:
+	; somewhat clever code can pack the waveform buffer into 20 bytes
+	; at the least, though the decoding would take a bit more work.
+
 	.endif
