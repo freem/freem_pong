@@ -12,6 +12,7 @@
 ;  6) Waveform or Noise
 ;==============================================================================;
 ; PCE sound defines
+	sound_StopAll = sound_StopAll_pce
 
 ;==============================================================================;
 ; PCE-specific signature
@@ -24,8 +25,26 @@
 ; sound_StopAll_pce
 ; Stop sound on all PCE audio channels.
 
-sound_StopAll_pce:
+; Clobbers: X, A
+
+.proc sound_StopAll_pce
+	ldx #5 ; (6-1)
+@sound_StopAll_Loop_pce:
+	stx PSG_CHANSELECT
+
+	; get current control value for this channel
+	lda pce_soundControl,x
+	and #$1F ; keep volume
+	ora PSG_CHSTATE_RESET
+	sta pce_soundControl,x ; update internal copy
+	sta PSG_CHANCTRL ; write to PSG hardware
+
+	; loop logic
+	dex
+	bpl @sound_StopAll_Loop_pce ; (from 5 to 0)
+
 	rts
+.endproc
 
 ;==============================================================================;
 

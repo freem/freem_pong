@@ -13,14 +13,16 @@
 	.byte "+--------------+"
 
 ;==============================================================================;
-; sound_Update, or something like that
+; sound_PlayFrame
+; Runs a step of the sound engine.
+
+.proc sound_PlayFrame
+	rts
+.endproc
 
 ;==============================================================================;
 ; sound_StopAll
 ; Stops playback of all sound.
-
-sound_StopAll:
-	rts
 
 ;==============================================================================;
 ; sound_PlaySound
@@ -29,5 +31,6 @@ sound_StopAll:
 ; (Params)
 ; ? - Sound number to play.
 
-sound_PlaySound:
+.proc sound_PlaySound
 	rts
+.endproc

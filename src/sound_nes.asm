@@ -10,6 +10,7 @@
 ;  4) Noise
 ;==============================================================================;
 ; NES sound defines
+	sound_StopAll = sound_StopAll_nes
 
 ;==============================================================================;
 ; NES-specific signature
@@ -23,8 +24,9 @@
 ; sound_StopAll_nes
 ; Stop sound on all NES audio channels.
 
-sound_StopAll_nes:
+.proc sound_StopAll_nes
 	rts
+.endproc
 
 ;==============================================================================;
 ; tbl_PulseFreq_Lo, tbl_PulseFreq_Hi
