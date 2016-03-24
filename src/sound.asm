@@ -13,6 +13,21 @@
 	.byte "+--------------+"
 
 ;==============================================================================;
+; sound_Disable
+sound_Disable:
+	lda #0
+	sta soundEnable
+	jmp sound_Disable_plat ; call platform-specific code; must end with rts
+
+;------------------------------------------------------------------------------;
+; sound_Enable
+
+sound_Enable:
+	lda #1
+	sta soundEnable
+	jmp sound_Enable_plat ; call platform-specific code; must end with rts
+
+;==============================================================================;
 ; sound_PlayFrame
 ; Runs a step of the sound engine.
 
@@ -22,7 +37,7 @@
 
 ;==============================================================================;
 ; sound_StopAll
-; Stops playback of all sound.
+; Stops playback of all sound. (Defined in system-specific code)
 
 ;==============================================================================;
 ; sound_PlaySound

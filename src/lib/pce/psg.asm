@@ -14,7 +14,7 @@
 	stz PSG_LFOCONTROL
 
 	; reset all channels
-	lda #5 ; (6-1)
+	lda #5 ; (6-1 channels)
 @psg_Init_clearloop:
 	sta PSG_CHANSELECT
 	stz PSG_CHANCTRL
@@ -46,10 +46,12 @@
 
 .macro psg_SetMainVolume vol
 	.if vol == 0
-		stz PSG_GLOBALVOL
+		stz pce_globalVolume ; write to local copy
+		stz PSG_GLOBALVOL    ; write to PSG hardware
 	.else
 		lda #vol
-		sta PSG_GLOBALVOL
+		sta pce_globalVolume ; write to local copy
+		sta PSG_GLOBALVOL    ; write to PSG hardware
 	.endif
 .endmacro
 
@@ -70,8 +72,9 @@
 ; should this macro use Left/Right params instead of setting it wholesale?
 
 .macro psg_SetChanPan chan,pan
-	lda #chan
-	ldx #pan
-	sta PSG_CHANSELECT
-	stx PSG_CHANPAN
+	ldx #chan
+	lda #pan
+	stx PSG_CHANSELECT
+	sta pce_soundBalance,x ; write to local copy
+	sta PSG_CHANPAN        ; write to PSG hardware
 .endmacro

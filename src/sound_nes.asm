@@ -9,8 +9,10 @@
 ;  3) Triangle
 ;  4) Noise
 ;==============================================================================;
-; NES sound defines
+; NES sound engine routine defines
 	sound_StopAll = sound_StopAll_nes
+	sound_Disable_plat = sound_Disable_nes
+	sound_Enable_plat = sound_Enable_nes
 
 ;==============================================================================;
 ; NES-specific signature
@@ -19,6 +21,26 @@
 	.byte "|2A03/2A07 code|"
 	.byte "+--------------+"
 	; xxx: should handle NTSC vs. PAL frequency tables.
+
+;==============================================================================;
+; sound_Disable_nes
+; NES-specific sound disable code.
+
+.proc sound_Disable_nes
+	lda #0
+	sta APU_STATUS
+	rts
+.endproc
+
+;------------------------------------------------------------------------------;
+; sound_Disable_nes
+; NES-specific sound enable code.
+
+.proc sound_Enable_nes
+	lda #$0F
+	sta APU_STATUS
+	rts
+.endproc
 
 ;==============================================================================;
 ; sound_StopAll_nes
