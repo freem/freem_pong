@@ -1,4 +1,4 @@
-; sound driver code (NES-specific)
+; sound driver code and data (NES-specific)
 ;==============================================================================;
 ; Target is the sound portion of the 2A03/2A07.
 ; DPCM, PCM, and expansion sound are not handled.

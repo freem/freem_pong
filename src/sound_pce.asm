@@ -1,4 +1,4 @@
-; sound driver code (PCE-specific)
+; sound driver code and data (PCE-specific)
 ;==============================================================================;
 ; Target is the PSG chip found in the PC Engine/TurboGrafx 16.
 ; Direct D/A and Frequency Modulation are not handled.

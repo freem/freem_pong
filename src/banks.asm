@@ -51,10 +51,10 @@ pce_tilesSPR: .incbin "gfx/pce/spr.pce"
 	; in-game score tiles
 tbl_scoreTiles_Top:
 	.word $1136,$1137,$1138,$1138,$1139,$113A,$113A,$113B,$113C,$113C
-	; xxx: zero out A-F
+	.word $1100,$1100,$1100,$1100,$1100,$1100
 tbl_scoreTiles_Bot:
 	.word $113D,$113E,$113F,$1140,$1141,$1140,$1142,$1143,$1142,$1140
-	; xxx: zero out A-F
+	.word $1100,$1100,$1100,$1100,$1100,$1100
 
 	.endif
 
