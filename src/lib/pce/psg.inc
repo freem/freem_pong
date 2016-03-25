@@ -73,7 +73,7 @@ PSG_PAN_HARDRIGHT = $0F
 ; >               32 * n
 ;
 ; to get n (12 bit value) from a frequency (Hz):
-; >       3850000
+; >       3580000
 ; > n = -----------
 ; >       32*freq
 
@@ -95,7 +95,7 @@ PSG_PAN_HARDRIGHT = $0F
 ; >             64 * (n^31)
 ;
 ; to get n (5 bit value) from a frequency (Hz):
-; >       3850000
+; >       3580000
 ; > n = ----------- ^ 31
 ; >       64*freq
 
@@ -113,4 +113,8 @@ PSG_LFOTYPE_ADD   = %01 ; 01 - add FM data directly
 PSG_LFOTYPE_ADDS4 = %10 ; 10 - FM data << 4, add to frequency
 PSG_LFOTYPE_ADDS8 = %11 ; 11 - FM data << 8, add to frequency
 
-; todo: frequency equation from psg.txt
+; LFO trigger:
+PSG_LFOTRIGGER_ON  = %00000000
+PSG_LFOTRIGGER_OFF = %10000000
+
+; todo: LFO frequency equation from psg.txt
