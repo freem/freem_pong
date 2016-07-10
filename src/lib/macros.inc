@@ -35,7 +35,7 @@
 ; dest - Destination
 
 ; (Implementation Details)
-; NES - uses jmp opcode
+; NES - uses jmp opcode (not actually limited to -128/127 bytes...)
 ; PCE - uses bra opcode
 
 .macro mac_alwaysjump dest
