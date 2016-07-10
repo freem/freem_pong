@@ -33,12 +33,12 @@ tbl_PaddleDir_SectionBot: .byte 3,4
 ; pointer table for ball direction changes
 ptbl_BallDirUpdate:
 	.addr dummyRTS
-	.addr game_updateBall_Dir1
-	.addr game_updateBall_Dir2
-	.addr game_updateBall_Dir3
-	.addr game_updateBall_Dir4
-	.addr game_updateBall_Dir5
-	.addr game_updateBall_Dir6
+	.addr game_updateBall_Dir1 ; northeast
+	.addr game_updateBall_Dir2 ; east
+	.addr game_updateBall_Dir3 ; southeast
+	.addr game_updateBall_Dir4 ; southwest
+	.addr game_updateBall_Dir5 ; west
+	.addr game_updateBall_Dir6 ; northwest
 
 ;==============================================================================;
 game_setup:
@@ -86,11 +86,14 @@ game_setup:
 	sta runTimers
 	sta timer1
 	sta timer2
+	; game not paused
+	sta gamePaused
 
 	; temporary: get the game part working first before the damned menu system
 	;--------------------------------------------------------------------------;
 	lda #1
 	sta inGame
+
 	; mainly for trying to debug PCE version
 	lda #0
 	sta curServe
@@ -187,6 +190,10 @@ game_AttractLoop:
 game_GameLoop:
 	;-- things to do before vblank --;
 	jsr game_InputsGame
+
+	lda gamePaused
+	bne @game_GameLoop_VBlank
+
 	jsr game_updatePaddles
 	jsr game_updateBall
 

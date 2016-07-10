@@ -69,6 +69,7 @@
 	.bss
 
 	inGame:     .res 1 ; currently in game? (0=no, 1=yes)
+	gamePaused: .res 1 ; game currently paused? (0=no, 1=yes)
 	maxScore:   .res 1 ; score to win (BCD)
 	scoreP1:    .res 1 ; player 1 score (BCD)
 	scoreP2:    .res 1 ; player 2 score (BCD)

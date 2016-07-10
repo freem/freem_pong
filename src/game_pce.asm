@@ -124,11 +124,25 @@ game_InputsAttract_pce:
 ; X - player number (0=p1, 1=p2)
 
 game_InputsGame_pce:
+	; save copies of inputs for operation later
 	lda pce_padTrigger,x
 	sta tmp01
 	lda pce_padState,x
 	sta tmp00
 
+	; check if paused
+	lda gamePaused
+	beq @game_InputsGame_pce_Normal
+	; if paused, only check for start/run (bit 3)
+	bbs3 tmp01,@game_InputsGame_pce_Unpause
+	rts
+
+@game_InputsGame_pce_Unpause:
+	stz gamePaused
+	rts
+
+
+@game_InputsGame_pce_Normal:
 	; check for up (bit 4)
 	bbr4 tmp00,@game_InputsGame_pce_CheckDown
 
@@ -147,7 +161,7 @@ game_InputsGame_pce:
 	cmp #PADDLE_MIN_Y_POS
 	bcc @game_InputsGame_pce_ForceMin
 
-	bra @game_InputsGame_pce_Debug
+	bra @game_InputsGame_pce_Run
 
 @game_InputsGame_pce_ForceMin:
 	lda #PADDLE_MIN_Y_POS
@@ -156,7 +170,7 @@ game_InputsGame_pce:
 
 @game_InputsGame_pce_CheckDown:
 	; check for down (bit 6)
-	bbr6 tmp00,@game_InputsGame_pce_Debug
+	bbr6 tmp00,@game_InputsGame_pce_Run
 
 	; pressed down
 	lda player1Y,x
@@ -173,11 +187,18 @@ game_InputsGame_pce:
 	cmp #PADDLE_MAX_Y_POS
 	bcs @game_InputsGame_pce_ForceMax
 
-	bra @game_InputsGame_pce_Debug
+	bra @game_InputsGame_pce_Run
 
 @game_InputsGame_pce_ForceMax:
 	lda #PADDLE_MAX_Y_POS
 	sta player1Y,x
+
+@game_InputsGame_pce_Run:
+	; check for start/run (bit 3)
+	bbr3 tmp01,@game_InputsGame_pce_Debug
+
+	lda #1
+	sta gamePaused
 
 @game_InputsGame_pce_Debug:
 	.ifdef __DEBUGMODE__
@@ -249,15 +270,22 @@ game_InputsGame_Debug_pce:
 
 @game_InputsGame_Debug_pce_left:
 	; left (bit 7)
-	bbr7 tmp00,@game_InputsGame_Debug_pce_select
+	bbr7 tmp00,@game_InputsGame_Debug_pce_run
 
 	; ball left
 	dec ballX
 	lda ballX
 	cmp #$FF
-	bne @game_InputsGame_Debug_pce_select
+	bne @game_InputsGame_Debug_pce_run
 
 	stz ballX_Hi
+
+@game_InputsGame_Debug_pce_run:
+	; start/run (bit 3)
+	bbr3 tmp01,@game_InputsGame_Debug_pce_select
+
+	lda #1
+	sta gamePaused
 
 @game_InputsGame_Debug_pce_select:
 	; select (bit 2)

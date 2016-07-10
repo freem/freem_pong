@@ -112,7 +112,7 @@ game_InputsAttract_nes:
 
 @game_InputsAttract_nes_CheckRight:
 	lda tmp00
-	and #PAD_RIGHT
+	and #INPUT_RIGHT
 	beq @game_InputsAttract_nes_end
 
 	; pressed right; increment score or wrap around to min
@@ -145,7 +145,24 @@ game_InputsGame_nes:
 	lda nes_padState,x
 	sta tmp00
 
+	; check if paused
+	lda gamePaused
+	beq @game_InputsGame_nes_Normal
+	; if paused, only check for start
+	lda tmp01
+	and #INPUT_START
+	bne @game_InputsGame_nes_Unpause
+	rts
+
+@game_InputsGame_nes_Unpause:
+	lda #0
+	sta gamePaused
+	rts
+
+
+@game_InputsGame_nes_Normal:
 	; check for up
+	lda tmp00
 	and #PAD_UP
 	beq @game_InputsGame_nes_CheckDown
 
@@ -165,19 +182,19 @@ game_InputsGame_nes:
 	bcc @game_InputsGame_nes_ForceMin
 
 	; don't allow up+down
-	jmp @game_InputsGame_nes_Debug
+	jmp @game_InputsGame_nes_Start
 
 @game_InputsGame_nes_ForceMin:
 	lda #PADDLE_MIN_Y_POS
 	sta player1Y,x
 	; don't allow up+down
-	jmp @game_InputsGame_nes_Debug
+	jmp @game_InputsGame_nes_Start
 
 @game_InputsGame_nes_CheckDown:
 	; check for down
 	lda tmp00
 	and #PAD_DOWN
-	beq @game_InputsGame_nes_Debug
+	beq @game_InputsGame_nes_Start
 
 	; pressed down
 	lda player1Y,x
@@ -194,11 +211,19 @@ game_InputsGame_nes:
 	cmp #PADDLE_MAX_Y_POS
 	bcs @game_InputsGame_nes_ForceMax
 
-	jmp @game_InputsGame_nes_Debug
+	jmp @game_InputsGame_nes_Start
 
 @game_InputsGame_nes_ForceMax:
 	lda #PADDLE_MAX_Y_POS
 	sta player1Y,x
+
+@game_InputsGame_nes_Start:
+	lda tmp01
+	and #INPUT_START
+	beq @game_InputsGame_nes_Debug
+
+	lda #1
+	sta gamePaused
 
 @game_InputsGame_nes_Debug:
 	.ifdef __DEBUGMODE__
@@ -231,7 +256,22 @@ game_InputsGame_Debug_nes:
 	lda nes_padState
 	sta tmp00
 
+	lda gamePaused
+	beq @game_InputsGame_Debug_nes_Normal
+	lda tmp01
+	and #INPUT_START
+	bne @game_InputsGame_Debug_nes_Unpause
+	rts
+
+@game_InputsGame_Debug_nes_Unpause:
+	lda #0
+	sta gamePaused
+	rts
+
+
+@game_InputsGame_Debug_nes_Normal:
 	; input up: ball goes up
+	lda tmp00
 	and #PAD_UP
 	beq @game_InputsGame_Debug_nes_down
 
@@ -256,15 +296,24 @@ game_InputsGame_Debug_nes:
 @game_InputsGame_Debug_nes_right:
 	; input right: ball goes right
 	lda tmp00
-	and #PAD_RIGHT
-	beq @game_InputsGame_Debug_nes_select
+	and #INPUT_RIGHT
+	beq @game_InputsGame_Debug_nes_start
 
 	inc ballX
+
+@game_InputsGame_Debug_nes_start:
+	; input start: pause
+	lda tmp01
+	and #INPUT_START
+	beq @game_InputsGame_Debug_nes_select
+
+	lda #1
+	sta gamePaused
 
 @game_InputsGame_Debug_nes_select:
 	; input select: no more debuggery
 	lda tmp01
-	and #PAD_SELECT
+	and #INPUT_SELECT
 	beq @game_InputsGame_Debug_nes_end
 
 	lda #0
