@@ -63,6 +63,8 @@ When the ball debug mode is active, Player 1's controller moves the ball
 around the screen.
 
 --[Title Screen]----------------------------------------------------------------
+(currently not implemented)
+
 The title screen greets you when turning the game on.
 
 You can set the number of points for a game by pressing Left and Right.
@@ -71,7 +73,8 @@ Valid values are between 05 and ??.
 When ready, press either Start (NES) or Run (PCE) to begin the game.
 
 --[Gameplay]--------------------------------------------------------------------
-
+Gameplay is pretty basic. The ball doesn't really speed up when you hit it,
+since the current collision checks suck.
 
 
 --[License]---------------------------------------------------------------------
